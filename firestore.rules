@@ -1,0 +1,40 @@
+rules_version = '2';
+service cloud.firestore {
+ match /databases/{database}/documents {
+  function owner(uid) { return request.auth != null && request.auth.uid == uid; }
+  function money(v) { return v is int && v >= 0 && v <= 99999999999; }
+  function small(v) { return v is string && v.size() <= 160; }
+  function note(v) { return v is string && v.size() <= 1000; }
+  function quantity(v) { return v is string && v.matches('^[0-9]{1,7}(\\.[0-9]{1,3})?$'); }
+  function lineTotal(d) { return math.floor((math.floor(float(d.quantity)*1000+0.5)*d.unitPriceCents+500) / 1000); }
+  function base(id, pid) {
+   let d = request.resource.data;
+   return d.id == id && d.projectId == pid && d.createdAt is int && d.updatedAt is int
+    && d.createdAt > 0 && d.updatedAt >= d.createdAt && d.version is int && d.version > 0 && d.deleted is bool
+    && (!('uid' in d))
+    && (resource == null ? d.version == 1 : d.createdAt == resource.data.createdAt && d.version == resource.data.version + 1);
+  }
+  function valid(kind) {
+   let d = request.resource.data;
+   return (kind == 'purchases' && small(d.material) && d.material.size()>0 && small(d.category) && small(d.supplier) && small(d.unit) && quantity(d.quantity) && money(d.unitPriceCents) && money(d.paidCents) && lineTotal(d) <= 99999999999 && d.paidCents <= lineTotal(d) && small(d.date) && small(d.paymentMethod) && small(d.reference) && note(d.notes) && small(d.pendingItemId))
+   || (kind == 'pendingItems' && lineTotal(d) <= 99999999999 && small(d.material) && quantity(d.quantity) && money(d.unitPriceCents) && small(d.unit) && small(d.supplier) && small(d.dueDate) && small(d.buyDate) && small(d.receiveDate) && small(d.purchaseId) && note(d.notes) && d.type in ['comprar','recibir','solicitar','pagar','otro'] && d.priority in ['baja','normal','alta','urgente'] && d.status in ['solicitado','pendiente de compra','comprado','en camino','recibido','completado','cancelado'])
+   || (kind == 'workers' && small(d.name) && small(d.role) && small(d.phone) && d.agreement in ['diario','semanal','por actividad','otro'] && money(d.rateCents) && d.active is bool && note(d.notes))
+   || (kind == 'laborPayments' && small(d.workerId) && small(d.period) && note(d.description) && money(d.agreedCents) && money(d.paidCents) && d.paidCents<=d.agreedCents && small(d.date) && small(d.paymentMethod) && small(d.reference) && note(d.notes))
+   || (kind == 'suppliers' && small(d.name) && small(d.phone) && note(d.notes))
+   || (kind == 'materials' && small(d.name) && small(d.unit) && small(d.category));
+  }
+  match /users/{uid} {
+   allow read: if owner(uid);
+   allow create, update: if owner(uid) && request.resource.data.keys().hasOnly(['id','email','createdAt','updatedAt']) && request.resource.data.id == uid && small(request.resource.data.email);
+   match /projects/{pid} {
+    allow read: if owner(uid);
+    allow create, update: if owner(uid) && base(pid,pid) && small(request.resource.data.name) && request.resource.data.name.size()>0 && money(request.resource.data.budgetCents) && note(request.resource.data.description) && small(request.resource.data.location) && small(request.resource.data.startDate) && small(request.resource.data.endDate) && request.resource.data.status in ['planificación','activa','pausada','finalizada'];
+    allow delete: if owner(uid);
+    match /{kind}/{id} {
+     allow read, delete: if owner(uid) && kind in ['purchases','pendingItems','workers','laborPayments','suppliers','materials'];
+     allow create, update: if owner(uid) && base(id,pid) && valid(kind);
+    }
+   }
+  }
+ }
+}
