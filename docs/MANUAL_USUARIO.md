@@ -62,14 +62,9 @@ La opción de confianza permite conservar información en el navegador. No la ac
 
 ### Probar con datos de ejemplo
 
-Si ya se cargó la demostración local, puedes entrar con:
+Si ya se cargó la demostración, entra con el correo y contraseña que configuraste en el archivo privado de entorno, o los que te entregue el administrador por un canal seguro. No hay una cuenta ni contraseña universal incluida en el código. Al entrar verás la obra **Casa del bosque**, con compras, un trabajador, un pago parcial y una compra pendiente.
 
-```text
-Correo: demo@obra.local
-Contraseña: ObraDemo2026!
-```
-
-Son credenciales de ejemplo para emuladores. Para tu trabajo, crea tu propia cuenta; no uses contraseñas reales de otros servicios en esta demostración.
+La demostración pertenece únicamente a esa cuenta. Si ya tenías otra obra seleccionada, usa el selector de obras para abrir **Casa del bosque**. Puedes editar sus datos normalmente; repetir la carga no restablece los registros ni duplica la obra.
 
 ### Recuperar acceso
 

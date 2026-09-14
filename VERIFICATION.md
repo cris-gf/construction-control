@@ -46,3 +46,13 @@ docker compose run --rm app node scripts/check-persistence.mjs
 Ejecuta captura y comparación sin ejecutar Playwright entre ambas: Playwright limpia su carpeta `test-results` al comenzar.
 
 La auditoría completa de herramientas de desarrollo también se revisó: quedan 11 avisos moderados en dependencias transitivas de Firebase CLI y Vitest. No forman parte del bundle de producción. No se aplicó la sugerencia automática de degradar Firebase CLI a una versión mayor antigua; actualizar estas herramientas requiere volver a ejecutar las pruebas. Los avisos altos y críticos encontrados en las versiones iniciales se corrigieron.
+
+## Ajuste de credenciales y carga demo — 14 septiembre 2026
+
+- Lint, TypeScript y compilación PWA: correctos.
+- 14 pruebas de dominio/formulario, 5 de reglas y 4 flujos Playwright: correctos.
+- 6 pruebas de configuración privada: correctas.
+- Integración de aprovisionamiento en emuladores: cuenta nueva, ocho documentos leídos del servidor, repetición sin duplicados y contraseña incorrecta rechazada.
+- Credenciales fijas retiradas del código y manuales actuales; variables privadas excluidas de Git. Los commits históricos conservan los antiguos ejemplos locales, que no se usan para aprovisionar usuarios reales.
+- El primer intento Playwright encontró el puerto 4173 ocupado; la ejecución en un contenedor independiente pasó los cuatro flujos.
+- La carga online requiere completar SEED_EMAIL y SEED_PASSWORD en el archivo privado .env; estas pruebas locales no prueban que exista una cuenta online.

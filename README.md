@@ -23,7 +23,7 @@ docker compose up --build
 - Firestore: http://localhost:8080
 - Hosting (puerto 5002 para evitar AirPlay de macOS): http://localhost:5002 (sirve `dist`, disponible tras compilar)
 
-Crea una cuenta desde la aplicación y luego una obra. Opcionalmente ejecuta `docker compose run --rm app node scripts/seed.mjs` para crear datos de demostración separados (correo `demo@obra.local`, contraseña local `ObraDemo2026!`). El script se conecta exclusivamente a los emuladores. Los emuladores usan el proyecto ficticio `demo-construction`; no hace falta Firebase Console ni tarjeta. El correo de recuperación aparece en los registros del emulador Auth, no se envía por email. Nunca reutilices contraseñas reales en los emuladores.
+Crea una cuenta desde la aplicación y luego una obra. Para cargar una demostración configura credenciales privadas y sigue [la guía de carga demo](docs/CARGA_DEMO.md). Los emuladores usan el proyecto ficticio `demo-construction`; no hace falta Firebase Console ni tarjeta. El correo de recuperación aparece en los registros del emulador Auth, no se envía por email. Nunca reutilices contraseñas reales en los emuladores.
 
 La imagen usa Node 22.19.0 y JDK 21.0.8, admite ARM64 y x86_64 sin fijar arquitectura. `npm ci` instala el archivo de bloqueo durante el build; el arranque no modifica el lockfile. Código montado para HMR, dependencias en volumen nombrado, procesos con `init: true` y usuario node. Compose espera que Auth, Firestore y Hosting estén disponibles.
 
@@ -101,7 +101,7 @@ Consulta [DECISIONS.md](DECISIONS.md) para límites y decisiones.
 1. Crea un proyecto en Firebase Console con plan **Spark**, sin habilitar facturación.
 2. Registra una app web. Habilita Authentication → Email/Password.
 3. Crea Cloud Firestore en modo producción y elige su región antes de cargar datos.
-4. Copia `.env.example` a `.env`, rellena la configuración **pública** del SDK y usa `VITE_USE_EMULATORS=false`. No agregues cuentas de servicio, claves privadas ni secretos.
+4. Copia `.env.example` a `.env`, rellena la configuración **pública** del SDK y usa `VITE_USE_EMULATORS=false`. No agregues cuentas de servicio ni claves privadas. Las credenciales opcionales de carga demo usan `SEED_EMAIL` y `SEED_PASSWORD`, nunca `VITE_`.
 5. Compila con emuladores desactivados (Compose configura true por defecto; este override es obligatorio):
 
 ```bash
@@ -114,7 +114,7 @@ docker compose run --rm -e VITE_USE_EMULATORS=false app npm run build
 docker compose run --rm -e VITE_USE_EMULATORS=false app sh -c 'npx firebase login --no-localhost && npx firebase deploy --project TU_PROJECT_ID --only firestore:rules,firestore:indexes,hosting'
 ```
 
-El SDK toma las variables de `.env` durante la compilación. No subas `.env` a Git. Agrega tu dominio en los dominios autorizados de Authentication. Los índices compuestos están vacíos porque las consultas están acotadas al proyecto y los filtros se hacen localmente. Evita importar datos de demostración en producción. Esta entrega no crea recursos reales ni habilita Blaze.
+El SDK toma las variables de `.env` durante la compilación. No subas `.env` a Git. Agrega tu dominio en los dominios autorizados de Authentication. Los índices compuestos están vacíos porque las consultas están acotadas al proyecto y los filtros se hacen localmente. La carga demo en el Firebase real se ejecuta explícitamente siguiendo [CARGA_DEMO.md](docs/CARGA_DEMO.md). No requiere habilitar Blaze.
 
 Referencias: [persistencia offline de Firestore](https://firebase.google.com/docs/firestore/manage-data/enable-offline), [Firebase Emulator Suite](https://firebase.google.com/docs/emulator-suite/install_and_configure).
 

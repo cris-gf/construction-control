@@ -420,7 +420,7 @@ docker compose run --rm app npm run build
 
 ```bash
 docker compose run --rm app node scripts/check-hmr.mjs
-# Crea una obra adicional de ejemplo cada vez; úsalo solo en emuladores.
+# Configura primero .env.local-demo (ver CARGA_DEMO.md). Repetir no duplica.
 docker compose run --rm app node scripts/seed.mjs
 docker compose run --rm app node scripts/check-persistence.mjs --capture
 docker compose down
@@ -503,3 +503,9 @@ git push -u origin HEAD
 ```
 
 Sustituye el nombre de rama y el mensaje por los de tu cambio. La autenticación de GitHub se gestiona con las credenciales del equipo, fuera del repositorio. No incluyas tokens en la URL del remoto ni en archivos versionados.
+
+### Aprovisionar usuarios y datos de ejemplo
+
+Consulta [CARGA_DEMO.md](CARGA_DEMO.md) para el procedimiento local y online. `scripts/seed-config.mjs` carga variables privadas con Node y valida el destino; `scripts/seed-session.mjs` crea la cuenta o autentica la existente mediante el SDK cliente y las reglas Firestore; `scripts/seed.mjs` prepara los registros y realiza una transacción atómica. La ID de obra deriva del UID y una versión del conjunto demo. Si ya existe, el script solo verifica lecturas y no modifica nada. No se cambia la contraseña de una cuenta existente ni se utiliza Firebase Admin.
+
+Las variables `SEED_EMAIL` y `SEED_PASSWORD` nunca se importan desde `src/` ni usan prefijo `VITE_`. Solo los scripts Node leen estas credenciales; cambiar su valor no requiere recompilar la web. El frontend mantiene el formulario habitual de inicio de sesión.
