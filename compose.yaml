@@ -1,0 +1,38 @@
+services:
+  app:
+    build: .
+    init: true
+    ports: ["5173:5173"]
+    networks:
+      default:
+        aliases: ["obra-dev"]
+    volumes:
+      - .:/workspace
+      - node_modules:/workspace/node_modules
+    environment:
+      VITE_USE_EMULATORS: "true"
+      VITE_EMULATOR_HOST: ${VITE_EMULATOR_HOST:-localhost}
+      FIRESTORE_EMULATOR_HOST: emulators:8080
+    depends_on:
+      emulators:
+        condition: service_healthy
+  emulators:
+    build: .
+    init: true
+    command: ["node", "scripts/emulators.mjs"]
+    stop_grace_period: 60s
+    ports: ["4000:4000", "9099:9099", "8080:8080", "5002:5000"]
+    volumes:
+      - .:/workspace
+      - node_modules:/workspace/node_modules
+      - emulator_data:/data
+      - emulator_cache:/home/node/.cache/firebase
+    healthcheck:
+      test: ["CMD", "node", "scripts/healthcheck.mjs"]
+      interval: 5s
+      timeout: 3s
+      retries: 60
+volumes:
+  node_modules:
+  emulator_data:
+  emulator_cache:
