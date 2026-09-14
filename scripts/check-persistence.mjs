@@ -1,26 +1,9 @@
-import { initializeApp } from "firebase/app";
-import {
-  getAuth,
-  connectAuthEmulator,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
-import {
-  getFirestore,
-  connectFirestoreEmulator,
-  getDocs,
-  collection,
-} from "firebase/firestore";
+import { getDocs, collection } from "firebase/firestore";
 import { writeFileSync, readFileSync, mkdirSync } from "node:fs";
 import assert from "node:assert/strict";
-const app = initializeApp({
-  apiKey: "demo-key",
-  projectId: "demo-construction",
-});
-const auth = getAuth(app),
-  db = getFirestore(app);
-connectAuthEmulator(auth, "http://emulators:9099", { disableWarnings: true });
-connectFirestoreEmulator(db, "emulators", 8080);
-await signInWithEmailAndPassword(auth, "demo@obra.local", "ObraDemo2026!");
+import { loadSeedConfig } from "./seed-config.mjs";
+import { seedSession } from "./seed-session.mjs";
+const { auth, db } = await seedSession(loadSeedConfig());
 const projects = await getDocs(
   collection(db, "users", auth.currentUser.uid, "projects"),
 );

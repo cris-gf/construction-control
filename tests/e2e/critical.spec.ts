@@ -7,7 +7,9 @@ async function register(page: Page) {
   await page
     .getByLabel("Correo electrónico")
     .fill(`obra-${crypto.randomUUID()}@test.local`);
-  await page.getByLabel("Contraseña", { exact: true }).fill("ObraSegura123!");
+  await page
+    .getByLabel("Contraseña", { exact: true })
+    .fill(`Test-${crypto.randomUUID()}!`);
   await page.getByRole("checkbox").check();
   await page.getByRole("button", { name: "Crear cuenta", exact: true }).click();
   await expect(

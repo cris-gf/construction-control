@@ -12,7 +12,10 @@
     "test:rules": "vitest run tests/rules.test.ts",
     "test:e2e": "playwright test",
     "emulators": "node scripts/emulators.mjs",
-    "preview": "vite preview --host 0.0.0.0"
+    "preview": "vite preview --host 0.0.0.0",
+    "seed": "node scripts/seed.mjs",
+    "test:seed": "node --test tests/seed.test.mjs",
+    "test:seed:integration": "node scripts/check-seed.mjs"
   },
   "dependencies": {
     "firebase": "12.2.1",

@@ -1,12 +1,14 @@
 import { chromium } from "@playwright/test";
 import { mkdirSync } from "node:fs";
+import { loadSeedConfig } from "./seed-config.mjs";
+const { email, password } = loadSeedConfig();
 const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: 1440, height: 1050 } });
 const errors = [];
 page.on("pageerror", (e) => errors.push(e.message));
 await page.goto("http://emulators:5000");
-await page.getByLabel("Correo electrónico").fill("demo@obra.local");
-await page.getByLabel("Contraseña", { exact: true }).fill("ObraDemo2026!");
+await page.getByLabel("Correo electrónico").fill(email);
+await page.getByLabel("Contraseña", { exact: true }).fill(password);
 await page.getByRole("button", { name: "Iniciar sesión", exact: true }).click();
 await page.getByRole("heading", { name: "Todo bajo control." }).waitFor();
 await page

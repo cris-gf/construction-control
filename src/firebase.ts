@@ -14,11 +14,12 @@ import { schemas, type Kind, type RecordData } from "./domain";
 const env = import.meta.env;
 export const emulated = env.VITE_USE_EMULATORS === "true";
 const config = {
-  apiKey: env.VITE_FIREBASE_API_KEY || "demo-key",
-  authDomain:
-    env.VITE_FIREBASE_AUTH_DOMAIN || "demo-construction.firebaseapp.com",
-  projectId: env.VITE_FIREBASE_PROJECT_ID || "demo-construction",
-  appId: env.VITE_FIREBASE_APP_ID || "demo-app",
+  apiKey: emulated ? "demo-key" : env.VITE_FIREBASE_API_KEY,
+  authDomain: emulated
+    ? "demo-construction.firebaseapp.com"
+    : env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: emulated ? "demo-construction" : env.VITE_FIREBASE_PROJECT_ID,
+  appId: emulated ? "demo-app" : env.VITE_FIREBASE_APP_ID,
 };
 if (!emulated && (!env.VITE_FIREBASE_API_KEY || !env.VITE_FIREBASE_PROJECT_ID))
   throw new Error("Falta configurar Firebase. Consulta .env.example.");
