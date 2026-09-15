@@ -86,7 +86,7 @@ Activa “dispositivo de confianza” al iniciar sesión para habilitar IndexedD
 
 ## Seguridad y arquitectura
 
-`src/domain.ts`: tipos, schemas y aritmética. `src/firebase.ts`: sesiones, persistencia por UID y escrituras por ruta. `src/App.tsx`: consultas y pantallas privadas. `src/forms.tsx`: formularios y validación. `src/backup.ts`: JSON/CSV/ICS. `firestore.rules`: denegación por defecto, validación de propietario, campos críticos y versión.
+El código está separado en `app`, `features`, `components`, `hooks`, `services`, `domain`, `config`, `locales/es` y `styles`. Consulta [Arquitectura y mantenimiento](docs/ARQUITECTURA.md) para saber dónde modificar cada parte. Los ajustes generales están en `src/config/appConfig.ts`; los textos, en `src/locales/es`. `firestore.rules` valida propietario, campos críticos y versiones en el servidor.
 
 Los documentos están bajo `users/{uid}/projects/{projectId}`; las subcolecciones son purchases, pendingItems, workers, laborPayments, suppliers y materials. No existen rutas globales de usuarios accesibles ni roles administrativos. El borrado lógico conserva relaciones y permite sincronizar. Los totales se derivan de documentos no eliminados; nunca se almacenan agregados duplicados.
 

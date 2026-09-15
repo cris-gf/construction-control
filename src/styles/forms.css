@@ -1,0 +1,67 @@
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: #102d2380;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 20;
+  backdrop-filter: blur(4px);
+}
+.modal {
+  width: 620px;
+  max-height: 92dvh;
+  overflow: auto;
+  background: #fafbf6;
+  border-radius: 14px;
+  padding: 25px;
+  box-shadow: 0 20px 70px #0d241f40;
+}
+.modal header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.modal h2 {
+  font-size: 25px;
+  margin: 0;
+}
+.modal header .eyebrow {
+  margin-bottom: 8px;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.modal footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 25px;
+}
+.calculated {
+  background: #eaf0e2;
+  padding: 16px;
+  margin-top: 22px;
+  border-radius: 8px;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.calculated span {
+  font-size: 12px;
+}
+.calculated strong {
+  font-size: 18px;
+}
+.import-preview {
+  background: #f0f4e9;
+  padding: 20px;
+  margin-top: 15px;
+  border-radius: 8px;
+}

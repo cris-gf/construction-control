@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "vitest run tests/domain.test.ts tests/forms.test.tsx",
+    "test": "vitest run tests/domain.test.ts tests/forms.test.tsx tests/architecture.test.ts",
     "test:rules": "vitest run tests/rules.test.ts",
     "test:e2e": "playwright test",
     "emulators": "node scripts/emulators.mjs",

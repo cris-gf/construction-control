@@ -1,16 +1,18 @@
-import { initializeApp, getApps } from "firebase/app";
-import { getAuth, connectAuthEmulator } from "firebase/auth";
+import { getApps, initializeApp } from "firebase/app";
+import { connectAuthEmulator, getAuth } from "firebase/auth";
 import {
-  initializeFirestore,
-  persistentLocalCache,
-  persistentMultipleTabManager,
-  memoryLocalCache,
   connectFirestoreEmulator,
   doc,
+  initializeFirestore,
+  memoryLocalCache,
+  persistentLocalCache,
+  persistentMultipleTabManager,
   writeBatch,
   type Firestore,
 } from "firebase/firestore";
-import { schemas, type Kind, type RecordData } from "./domain";
+import { appConfig } from "../config/appConfig";
+import { schemas, type Kind, type RecordData } from "../domain";
+import { servicesText } from "../locales/es/services";
 const env = import.meta.env;
 export const emulated = env.VITE_USE_EMULATORS === "true";
 const config = {
@@ -22,7 +24,7 @@ const config = {
   appId: emulated ? "demo-app" : env.VITE_FIREBASE_APP_ID,
 };
 if (!emulated && (!env.VITE_FIREBASE_API_KEY || !env.VITE_FIREBASE_PROJECT_ID))
-  throw new Error("Falta configurar Firebase. Consulta .env.example.");
+  throw new Error(servicesText.missingFirebaseConfig);
 const app = initializeApp(config);
 export const auth = getAuth(app);
 const host = env.VITE_EMULATOR_HOST || "localhost";
@@ -30,7 +32,8 @@ if (emulated)
   connectAuthEmulator(auth, `http://${host}:9099`, { disableWarnings: true });
 const databases = new Map<string, Firestore>();
 export function database(uid: string) {
-  if (auth.currentUser?.uid !== uid) throw new Error("Sesión no válida.");
+  if (auth.currentUser?.uid !== uid)
+    throw new Error(servicesText.invalidSession);
   const found = databases.get(uid);
   if (found) return found;
   // El nombre de Firebase App separa físicamente IndexedDB por cuenta.
@@ -39,7 +42,7 @@ export function database(uid: string) {
     getApps().find((a) => a.name === name) || initializeApp(config, name);
   const db = initializeFirestore(userApp, {
     localCache:
-      localStorage.getItem("trusted-device") === "yes"
+      localStorage.getItem(appConfig.storage.trustedDeviceKey) === "yes"
         ? persistentLocalCache({ tabManager: persistentMultipleTabManager() })
         : memoryLocalCache(),
   });
@@ -75,7 +78,7 @@ export function ref(
     !uid ||
     [projectId, id].some((v) => v.includes("/"))
   )
-    throw new Error("Ruta no válida.");
+    throw new Error(servicesText.invalidPath);
   return kind === "projects"
     ? doc(db, "users", uid, "projects", id)
     : doc(db, "users", uid, "projects", projectId, kind, id);
@@ -91,7 +94,7 @@ export function save(
   const batch = writeBatch(db);
   const parsed = schemas[kind].parse(value);
   if (parsed.projectId !== (kind === "projects" ? parsed.id : projectId))
-    throw new Error("El registro no pertenece a la obra activa.");
+    throw new Error(servicesText.wrongProject);
   batch.set(ref(db, uid, projectId, kind, value.id), parsed);
   if (other)
     batch.set(

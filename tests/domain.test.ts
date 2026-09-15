@@ -11,7 +11,9 @@ import {
   emptyData,
   compare,
 } from "../src/domain";
-import { ics, csv, backup, parseBackup } from "../src/backup";
+import { backup, parseBackup } from "../src/features/backup/serialization";
+import { ics } from "../src/domain/calendar";
+import { csv } from "../src/services/files";
 const base = fresh("");
 const project = projectSchema.parse({
   ...base,

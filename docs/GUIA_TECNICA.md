@@ -21,18 +21,20 @@ Esta guía describe la implementación existente y distingue los ejemplos de amp
 9. [Diagnóstico de problemas](#9-diagnóstico-de-problemas)
 10. [Respaldos, migraciones y publicación](#10-respaldos-migraciones-y-publicación)
 
+Consulta también [Arquitectura y mantenimiento](ARQUITECTURA.md), con la estructura actual y ejemplos de configuración, textos y componentes.
+
 ## 1. Recorrido para leer el código
 
 Sigue este orden para entender una compra desde el formulario hasta Firestore:
 
 | Orden | Archivo / símbolo | Qué revisar |
 | --- | --- | --- |
-| 1 | [src/domain.ts](../src/domain.ts): `purchaseSchema`, `cents`, `total`, `summary` | Estructura válida y cálculos exactos |
-| 2 | [src/forms.tsx](../src/forms.tsx): `fields`, `Editor`, `submit` | Campos visibles, valores iniciales, conversión de importes y validación |
-| 3 | [src/App.tsx](../src/App.tsx): `Workspace`, `submit` | Selección de obra, comprobación de versión y mensajes al guardar |
-| 4 | [src/firebase.ts](../src/firebase.ts): `ref`, `save` | Ruta del documento y escritura por lotes |
+| 1 | [src/domain/index.ts](../src/domain/index.ts): `purchaseSchema`, `cents`, `total`, `summary` | Estructura válida y cálculos exactos |
+| 2 | [src/components/EntityEditor.tsx](../src/components/EntityEditor.tsx): `Editor`, `submit`; descriptores en `src/config/recordFields.ts` | Campos visibles, valores iniciales, conversión de importes y validación |
+| 3 | [src/app/Workspace.tsx](../src/app/Workspace.tsx): `Workspace`; `submit` está en `src/hooks/useWorkspaceActions.tsx` | Selección de obra, comprobación de versión y mensajes al guardar |
+| 4 | [src/services/firebase.ts](../src/services/firebase.ts): `ref`, `save` | Ruta del documento y escritura por lotes |
 | 5 | [firestore.rules](../firestore.rules): `owner`, `base`, `valid` | Autorización y validación en servidor |
-| 6 | `Workspace` → `onSnapshot` → `Dashboard` / `Purchases` | Actualización local de listas y totales; confirmación posterior del servidor |
+| 6 | `useWorkspaceData` → `onSnapshot` → `Dashboard` / `Purchases` | Actualización local de listas y totales; confirmación posterior del servidor |
 | 7 | [tests/domain.test.ts](../tests/domain.test.ts), [tests/forms.test.tsx](../tests/forms.test.tsx), [tests/rules.test.ts](../tests/rules.test.ts) | Comportamiento esperado y casos de rechazo |
 
 En el editor, usa “Buscar símbolo” o busca el nombre de la función. Las referencias a símbolos resisten mejor los cambios que los números de línea.
@@ -42,12 +44,12 @@ En el editor, usa “Buscar símbolo” o busca el nombre de la función. Las re
 | Archivo | Responsabilidad |
 | --- | --- |
 | [src/main.tsx](../src/main.tsx) | Monta React, `BrowserRouter`, estilos y registro del service worker |
-| [src/App.tsx](../src/App.tsx) | Componentes `Auth`, `Workspace`, `Dashboard`, `Purchases`, `Team`, `Prices`; incluye pendientes y respaldo dentro de `Workspace` |
-| [src/forms.tsx](../src/forms.tsx) | Editor reutilizable basado en descriptores de campo y títulos por tipo de registro |
-| [src/domain.ts](../src/domain.ts) | Schemas Zod, tipos inferidos y funciones puras de dinero, fechas y resumen |
-| [src/firebase.ts](../src/firebase.ts) | Inicialización del SDK modular, autenticación por app, caché por cuenta y escritura |
-| [src/backup.ts](../src/backup.ts) | Validación JSON, serialización CSV, descarga y generación ICS |
-| [src/styles.css](../src/styles.css) | Estilos globales, tarjetas, formularios y puntos de adaptación móvil |
+| [src/app/Workspace.tsx](../src/app/Workspace.tsx) | Composición del espacio privado; cada pantalla está en `src/features`, las suscripciones y acciones en `src/hooks` |
+| [src/components/EntityEditor.tsx](../src/components/EntityEditor.tsx) | Editor reutilizable basado en descriptores de campo y títulos por tipo de registro |
+| [src/domain/index.ts](../src/domain/index.ts) | Schemas Zod, tipos inferidos y funciones puras de dinero, fechas y resumen |
+| [src/services/firebase.ts](../src/services/firebase.ts) | Inicialización del SDK modular, autenticación por app, caché por cuenta y escritura |
+| [src/features/backup/serialization.ts](../src/features/backup/serialization.ts) | Validación y serialización JSON; CSV/descargas están en `src/services/files.ts` e ICS en `src/domain/calendar.ts` |
+| [src/styles/index.css](../src/styles/index.css) | Estilos globales, tarjetas, formularios y puntos de adaptación móvil |
 | [vite.config.ts](../vite.config.ts) | React, configuración PWA, manifest generado, precaché y división del bundle |
 | [public](../public) | Iconos PNG de 192 y 512 píxeles |
 | [firebase.json](../firebase.json) | Puertos de emuladores, reglas, índices, Hosting y fallback a `index.html` |
@@ -66,7 +68,7 @@ No existe un servidor de aplicación propio ni una API REST desarrollada para es
 ```mermaid
 flowchart TD
     A[Formulario Editor] --> B[Schemas y cálculos de dominio]
-    B --> C[Workspace: obra y versión]
+    B --> C[useWorkspaceActions: obra y versión]
     C --> D[save: ruta del usuario y batch]
     D --> E[Firestore SDK: caché local y cola]
     E --> F[onSnapshot: listas y resumen]
@@ -80,7 +82,7 @@ flowchart TD
 
 `App` escucha `onAuthStateChanged`. Sin usuario muestra `Auth`; con usuario monta `Workspace` con `key={user.uid}`, de modo que cambiar de cuenta crea un estado de interfaz nuevo.
 
-`BrowserRouter` mantiene la URL. La selección de pantalla se hace actualmente comparando `useLocation().pathname` en `App.tsx`, no mediante un árbol separado de componentes `<Routes>`.
+`BrowserRouter` mantiene la URL. La selección de pantalla se hace actualmente comparando `useLocation().pathname` en `app/Workspace.tsx`, no mediante un árbol separado de componentes `<Routes>`.
 
 | URL | Pantalla |
 | --- | --- |
@@ -327,15 +329,15 @@ docker compose down
 
 ### A. Cambiar un texto, color o tamaño
 
-1. Busca el texto en `App.tsx`; si es etiqueta de formulario, búscalo en `forms.tsx`.
-2. Para estilos, localiza la clase en `styles.css`, por ejemplo `.budget-card`, `.quick-actions`, `.record` o `.bottom-nav`.
+1. Busca el texto en `app/Workspace.tsx` y `hooks/useWorkspaceActions.tsx`; si es etiqueta de formulario, búscalo en `components/EntityEditor.tsx` y `config/recordFields.ts`.
+2. Para estilos, localiza la clase en `src/styles/`, por ejemplo `.budget-card`, `.quick-actions`, `.record` o `.bottom-nav`.
 3. Revisa también los bloques `@media`: una regla móvil puede sobrescribir la de escritorio.
 4. Comprueba 320, 390 y 1440 px, nombres largos, importes grandes y el formulario abierto.
 5. Prueba en 5173. Compila antes de revisar 5002.
 
 Cambiar una etiqueta visible no requiere cambiar el nombre del campo almacenado. Los tests de formulario y Playwright usan etiquetas accesibles; si cambias intencionalmente una, actualiza sus localizadores.
 
-Para cambiar nombre/iconos de instalación, revisa el manifest en `vite.config.ts`, el título en `index.html`, `public/` y la marca en `App.tsx`. La versión ya instalada puede tardar en reflejar un nuevo icono según el dispositivo.
+Para cambiar nombre/iconos de instalación, revisa el manifest en `vite.config.ts`, el título en `index.html`, `public/` y la marca en `app/Workspace.tsx` y `hooks/useWorkspaceActions.tsx`. La versión ya instalada puede tardar en reflejar un nuevo icono según el dispositivo.
 
 ### B. Añadir un campo a compras: ejemplo de `deliveryAddress`
 
@@ -348,7 +350,7 @@ Este campo **no existe actualmente**; el ejemplo indica las capas que tendrías 
 deliveryAddress: short.default(""),
 ```
 
-2. En `fields.purchases` de `forms.tsx`, agrega:
+2. En `fields.purchases` de `components/EntityEditor.tsx` y `config/recordFields.ts`, agrega:
 
 ```ts
 f("deliveryAddress", "Dirección de entrega"),
@@ -369,7 +371,7 @@ f("deliveryAddress", "Dirección de entrega"),
 
 ### C. Cambiar un cálculo o incluir un costo adicional
 
-Centraliza la fórmula en `domain.ts`. Revisa el impacto en `summary`, validación, reglas, editor, listas, comparador y archivos exportados. Mantén enteros para dinero.
+Centraliza la fórmula en `domain/schemas.ts` y `domain/calculations.ts`. Revisa el impacto en `summary`, validación, reglas, editor, listas, comparador y archivos exportados. Mantén enteros para dinero.
 
 Si añades flete, define antes si pertenece al total de la compra o a otra compra de servicio, si afecta precio comparable por unidad y qué parte está pagada. Prueba una compra parcial, conversión, edición, eliminación y reconexión. No agregues un campo que `summary()` ignore silenciosamente.
 
@@ -385,7 +387,7 @@ Para pantalla: agrega entrada a `nav`, condición de contenido y navegación acc
 
 Para colección: agrega schema, tipo, `Kind`, `RecordData`, `ProjectData`, `emptyData`, reglas y pruebas de aislamiento. Revisa respaldo/importación, su contador máximo y remapeo de relaciones. Las suscripciones se crean desde `emptyData`; añadir una entrada cambia también las lecturas por obra.
 
-Antes de ampliar mucho `App.tsx`, considera extraer componentes de pantalla y un hook de consultas. Conserva la separación por UID/proyecto y la cancelación de listeners durante esa refactorización.
+Antes de ampliar mucho `app/Workspace.tsx` y `hooks/useWorkspaceActions.tsx`, considera extraer componentes de pantalla y un hook de consultas. Conserva la separación por UID/proyecto y la cancelación de listeners durante esa refactorización.
 
 ## 8. Pruebas y revisión de cambios
 

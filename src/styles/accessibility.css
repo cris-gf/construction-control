@@ -1,0 +1,18 @@
+/* Texto secundario con contraste suficiente sobre fondos claros. */
+.eyebrow,
+.stat-card small,
+.section-heading > span,
+.page-footer,
+.legend span,
+.legend p,
+.agenda-counts span,
+.agenda-item small,
+.user-email,
+.muted,
+.record-tools,
+.tip small,
+.auth-form small,
+.sidebar nav a,
+.bottom-nav a {
+  color: #63715e;
+}

@@ -1,0 +1,118 @@
+.auth {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  min-height: 100vh;
+}
+.auth-story {
+  background: #214e40;
+  color: #f5f7e9;
+  padding: 60px 65px;
+  position: relative;
+  overflow: hidden;
+}
+.auth-story .brand {
+  font-size: 40px;
+}
+.auth-story .brand span {
+  color: #b0c8ad;
+}
+.auth-story h1 {
+  font-size: 52px;
+  line-height: 1.2;
+  letter-spacing: -2px;
+  margin-top: 100px;
+}
+.auth-story p {
+  color: #bccdb7;
+  font-size: 15px;
+  line-height: 1.8;
+}
+.architectural {
+  height: 220px;
+  position: relative;
+  margin-top: 60px;
+}
+.architectural > div {
+  border: 1px solid #89a386;
+  position: absolute;
+  transform: skewY(-12deg);
+  width: 110px;
+  height: 140px;
+  bottom: 30px;
+  left: 20px;
+  background: #345d4b;
+}
+.architectural > div:nth-child(2) {
+  left: 130px;
+  height: 190px;
+  background: #426b50;
+}
+.architectural > div:nth-child(3) {
+  left: 240px;
+  height: 100px;
+  background: #5c7956;
+}
+.architectural span {
+  position: absolute;
+  bottom: 0;
+  font-size: 8px;
+  letter-spacing: 3px;
+  color: #9cb590;
+}
+.auth-form {
+  max-width: 450px;
+  width: 100%;
+  margin: auto;
+  padding: 50px 35px;
+}
+.auth-form h2 {
+  font-size: 30px;
+  letter-spacing: -1px;
+}
+.auth-form > p {
+  margin-bottom: 30px;
+}
+.auth-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.auth-form form > button {
+  margin-top: 10px;
+}
+.auth-form .check {
+  flex-direction: row;
+  align-items: flex-start;
+  font-weight: 400;
+  line-height: 1.6;
+}
+.check input {
+  width: 18px;
+  min-height: 18px;
+  flex-shrink: 0;
+  accent-color: #214e40;
+}
+.auth-form small {
+  font-size: 10px;
+  color: #89937e;
+  margin-top: -15px;
+}
+.auth-links {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+.demo-note {
+  font-size: 10px;
+  margin-top: 35px;
+}
+.bottom-nav,
+.mobile-project,
+.mobile-only {
+  display: none !important;
+}
+.loading {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+}

@@ -1,7 +1,7 @@
 import React from "react";
 import { it, expect, vi, afterEach } from "vitest";
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
-import { Editor } from "../src/forms";
+import { Editor } from "../src/components/EntityEditor";
 afterEach(cleanup);
 it("formulario calcula total exacto y rechaza abono excesivo", () => {
   const onSave = vi.fn();
@@ -42,4 +42,31 @@ it("formulario calcula total exacto y rechaza abono excesivo", () => {
   expect(onSave).toHaveBeenCalledWith(
     expect.objectContaining({ unitPriceCents: 7199, paidCents: 251965 }),
   );
+});
+
+it("ofrece recargar conflictos aunque cambie el texto del mensaje", async () => {
+  const { RecordConflictError } = await import("../src/domain/errors");
+  const onReload = vi.fn();
+  render(
+    <Editor
+      kind="materials"
+      projectId={crypto.randomUUID()}
+      workers={[]}
+      onClose={() => {}}
+      onReload={onReload}
+      onSave={() => {
+        throw new RecordConflictError("Hay una revisión nueva disponible.");
+      }}
+    />,
+  );
+  fireEvent.change(screen.getByLabelText("Material *"), {
+    target: { value: "Cemento" },
+  });
+  fireEvent.submit(
+    screen.getByRole("button", { name: "Guardar material" }).closest("form")!,
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Recargar versión reciente" }),
+  );
+  expect(onReload).toHaveBeenCalledOnce();
 });

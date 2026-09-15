@@ -56,3 +56,16 @@ La auditoría completa de herramientas de desarrollo también se revisó: quedan
 - Credenciales fijas retiradas del código y manuales actuales; variables privadas excluidas de Git. Los commits históricos conservan los antiguos ejemplos locales, que no se usan para aprovisionar usuarios reales.
 - El primer intento Playwright encontró el puerto 4173 ocupado; la ejecución en un contenedor independiente pasó los cuatro flujos.
 - La carga online requiere completar SEED_EMAIL y SEED_PASSWORD en el archivo privado .env; estas pruebas locales no prueban que exista una cuenta online.
+
+## Reorganización modular y configuración general
+
+- `App.tsx` pasa de concentrar 1,566 líneas a una entrada de autenticación de 14 líneas; el espacio privado, las pantallas, los hooks y servicios tienen módulos propios.
+- Lint y TypeScript: correctos.
+- 18 pruebas de dominio, formularios y arquitectura: correctas. Incluyen fronteras de dependencias, ausencia de ciclos y recarga de conflictos independiente del texto.
+- 5 pruebas de reglas Firestore: correctas.
+- 4 flujos Playwright: correctos (aislamiento y compras, pendientes/equipo/respaldo, offline sin duplicados, ancho de 320 px).
+- HMR: un cambio en `src/styles/index.css` llega al navegador sin recargar; el diagnóstico restaura el archivo.
+- Compilación PWA correcta y restaurada para localhost. El CSS compilado conserva el hash `index-Ck-qvB8J.css` de la versión anterior.
+- No se cambiaron las reglas, las rutas de datos Firestore, los UID ni el formato de respaldos. La configuración general es pública en código; las credenciales permanecen en `.env`.
+- La comprobación de tamaño JSON utiliza bytes UTF-8, igual que la lectura del tamaño del archivo, y comparte el límite configurado.
+- Guía de mantenimiento y mapa de responsabilidades en `docs/ARQUITECTURA.md`.

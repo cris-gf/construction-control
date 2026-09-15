@@ -1,0 +1,62 @@
+/** Spanish interface copy for workspace. Stored domain values live in domain/schemas.ts. */
+export const workspaceText = {
+  importPreparationFailed: "No se pudo preparar el respaldo.",
+  loadingSession: "Preparando tu obra…",
+  openingWorkspace: "Abriendo tu espacio de trabajo…",
+  retry: "Reintentar",
+  workspaceLabel: "TU ESPACIO DE TRABAJO",
+  activeProject: "Proyecto activo",
+  selectProject: "Selecciona una obra",
+  newProject: "Nueva obra",
+  tipTitle: "Cada detalle cuenta.",
+  tipBody: "Un registro hoy, una mejor decisión mañana.",
+  confirmSignOut:
+    "Hay cambios pendientes. Quedarán en este dispositivo para tu próxima sesión. ¿Cerrar sesión?",
+  signOut: "Cerrar sesión",
+  myWorkspace: "Mi espacio",
+  overview: "Resumen",
+  syncError: "Con error",
+  offline: "Sin conexión",
+  syncing: "Sincronizando",
+  connecting: "Conectando",
+  connected: "Conectado",
+  pendingChanges: " · Cambios pendientes",
+  mobileProject: "Obra en móvil",
+  myProjects: "Mis obras",
+  close: "Cerrar",
+  emptyTitle: "Tu próxima obra empieza aquí.",
+  emptyDescription: "Crea una obra y lleva sus cuentas desde el primer día.",
+  createFirstProject: "Crear mi primera obra",
+  overviewEyebrow: "UNA VISTA CLARA DE TU OBRA",
+  pageEyebrow: "TU OBRA, AL DÍA",
+  overviewTitle: "Todo bajo control.",
+  overviewDescription: "Cada quetzal en su lugar. Así va tu proyecto.",
+  pageDescriptionSuffix: " · Registra, consulta y organiza.",
+  addPurchase: "Registrar compra",
+  addPending: "Agregar pendiente",
+  addLaborPayment: "Registrar pago",
+  footer: "Hecho para construir con tranquilidad.",
+  localEnvironment: "ENTORNO LOCAL",
+  storageNotReady:
+    "El almacenamiento aún no está listo. Intenta guardar nuevamente.",
+  recordConflict:
+    "Este registro cambió. Recarga la versión reciente antes de guardar.",
+  pendingConflict: "El pendiente cambió. Recarga su versión reciente.",
+  saved: "Cambios confirmados en el servidor.",
+  syncFailed:
+    "No se pudo sincronizar el cambio; puede existir una versión más reciente. Reabre el registro y revisa los datos antes de intentarlo otra vez.",
+  queued: "Cambio enviado a la cola local; pendiente de confirmación.",
+  writeRejected:
+    "Cambio rechazado. Recarga la versión reciente e inténtalo otra vez.",
+  workerHasPayments:
+    "Este trabajador tiene pagos. Puedes marcarlo inactivo en lugar de eliminarlo.",
+  confirmDelete: "¿Eliminar este registro? Se retirará de los totales.",
+  importQueued: "Importación en cola local.",
+  importConfirmed: "Respaldo importado y confirmado.",
+  importFailed:
+    "No se pudo importar el respaldo. Ningún registro parcial fue guardado.",
+  storageFailed: "No se pudo abrir el almacenamiento. Vuelve a iniciar sesión.",
+  projectsFailed:
+    "No se pudieron consultar las obras. Revisa la sesión y vuelve a intentar.",
+  recordsFailed: "Error al consultar registros. Reintenta la sincronización.",
+} as const;
